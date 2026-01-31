@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TravelBuddy</title>
+  <link rel="stylesheet" href="/static/css/app.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TB</div>
+      <div>
+        <div class="title">TravelBuddy</div>
+        <div class="subtitle">Planner + Vlog demo</div>
+      </div>
+    </div>
+    <nav>
+      <button class="tab active" data-tab="auth">Auth</button>
+      <button class="tab" data-tab="plan">Plan</button>
+      <button class="tab" data-tab="itinerary">Itinerary</button>
+      <button class="tab" data-tab="summary">Summary</button>
+      <button class="tab" data-tab="vlog">Vlog</button>
+      <button class="tab" data-tab="community">Community</button>
+    </nav>
+    <div class="authbar">
+      <span id="status" class="muted">Logged out</span>
+      <button id="logout" class="secondary smallbtn hidden">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="auth" class="panel">
+      <div class="grid2">
+        <div class="card">
+          <h2>Register</h2>
+          <input id="r_name" placeholder="Name"/>
+          <input id="r_email" placeholder="Email"/>
+          <input id="r_pass" type="password" placeholder="Password"/>
+          <button id="register">Create account</button>
+          <div id="r_msg" class="muted"></div>
+        </div>
+        <div class="card">
+          <h2>Login</h2>
+          <input id="l_email" placeholder="Email"/>
+          <input id="l_pass" type="password" placeholder="Password"/>
+          <button id="login">Login</button>
+          <div id="l_msg" class="muted"></div>
+        </div>
+      </div>
+      <p class="muted small">After login, go to Plan tab to create a trip.</p>
+    </section>
+
+    <section id="plan" class="panel hidden">
+      <div class="grid2">
+        <div class="card">
+          <h2>Create Trip</h2>
+          <input id="t_name" value="Weekend Escape" placeholder="Trip name"/>
+          <input id="t_start" value="Sydney, NSW" placeholder="Start (text)"/>
+          <input id="t_dest" value="Blue Mountains, NSW" placeholder="Destination (text)"/>
+          <div class="rowwrap">
+            <select id="vehicle">
+              <option value="petrol">Petrol</option>
+              <option value="diesel">Diesel</option>
+              <option value="ev">EV</option>
+            </select>
+            <input id="passengers" type="number" min="1" value="2" title="Passengers"/>
+          </div>
+          <button id="create_trip">Create Trip</button>
+          <button id="list_trips" class="secondary">My Trips</button>
+          <div id="trip_msg" class="muted"></div>
+          <div id="trip_list" class="small muted"></div>
+        </div>
+
+        <div class="card">
+          <h2>Map & Route</h2>
+          <div id="map"></div>
+          <div class="rowwrap">
+            <button id="pick_start" class="secondary">Pick Start</button>
+            <button id="pick_dest" class="secondary">Pick Dest</button>
+            <button id="gen_route">Generate Route</button>
+            <button id="find_pois" class="secondary">Find POIs</button>
+          </div>
+          <div id="coords" class="small muted"></div>
+          <div id="route_msg" class="muted"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>POIs</h2>
+        <div class="rowwrap">
+          <label class="chip"><input type="checkbox" class="filt" value="attractions" checked/> attractions</label>
+          <label class="chip"><input type="checkbox" class="filt" value="food" checked/> food</label>
+          <label class="chip"><input type="checkbox" class="filt" value="fuel" checked/> fuel</label>
+          <label class="chip"><input type="checkbox" class="filt" value="ev" checked/> ev</label>
+        </div>
+        <div id="pois" class="poiList"></div>
+      </div>
+    </section>
+
+    <section id="itinerary" class="panel hidden">
+      <div class="card">
+        <h2>Itinerary</h2>
+        <div class="rowwrap">
+          <button id="refresh_itin" class="secondary">Refresh</button>
+          <button id="estimate">Estimate</button>
+          <input id="buffer" type="number" min="0" max="30" value="10" title="Buffer %"/>
+        </div>
+        <div id="itin" class="itinerary"></div>
+        <div id="est" class="estimate"></div>
+      </div>
+    </section>
+
+    <section id="summary" class="panel hidden">
+      <div class="grid2">
+        <div class="card">
+          <h2>Bullet plan</h2>
+          <div id="bullets" class="bullets"></div>
+        </div>
+        <div class="card">
+          <h2>Emotional story</h2>
+          <div id="story" class="story"></div>
+          <div class="rowwrap">
+            <a id="wa" class="button" target="_blank">WhatsApp</a>
+            <a id="email" class="button secondary">Email</a>
+            <button id="publish">Publish</button>
+          </div>
+          <div id="pub_msg" class="muted"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vlog" class="panel hidden">
+      <div class="grid2">
+        <div class="card">
+          <h2>Templates & prompts</h2>
+          <select id="tpl">
+            <option>Scenic Explorer</option>
+            <option>Foodie Trail</option>
+            <option>Family Memories</option>
+            <option>EV Road Trip</option>
+          </select>
+          <button id="load_prompts" class="secondary">Load prompts</button>
+          <div id="prompts" class="prompts"></div>
+        </div>
+        <div class="card">
+          <h2>Upload + generate</h2>
+          <div class="rowwrap">
+            <input id="day" type="number" min="1" value="1" title="Day"/>
+            <input id="phase" placeholder="Phase (e.g. Scenic stop)"/>
+          </div>
+          <input id="file" type="file" accept="image/*"/>
+          <button id="upload">Upload photo</button>
+          <div id="up_msg" class="muted"></div>
+          <div class="rowwrap">
+            <button id="daily" class="secondary">Daily recap</button>
+            <button id="final">Final film</button>
+          </div>
+          <div id="video" class="videos"></div>
+          <p class="small muted">Docker includes FFmpeg.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="community" class="panel hidden">
+      <div class="grid2">
+        <div class="card">
+          <h2>Public feed</h2>
+          <button id="feed_btn" class="secondary">Refresh</button>
+          <div id="feed" class="feed"></div>
+        </div>
+        <div class="card">
+          <h2>Groups</h2>
+          <div class="rowwrap">
+            <input id="g_name" placeholder="Group name"/>
+            <select id="g_vis">
+              <option value="public">public</option>
+              <option value="private">private</option>
+              <option value="invite_only">invite_only</option>
+            </select>
+            <button id="g_create">Create</button>
+          </div>
+          <button id="g_list" class="secondary">List groups</button>
+          <div id="groups" class="groups"></div>
+          <hr/>
+          <h3>Post trip to group</h3>
+          <input id="pgid" placeholder="Group ID"/>
+          <input id="ptid" placeholder="Trip ID"/>
+          <input id="pmsg" placeholder="Message"/>
+          <button id="post">Post</button>
+          <div id="post_msg" class="muted"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

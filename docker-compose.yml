@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  travelbuddy:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/backend/data
+      - ./backend/uploads:/app/backend/uploads
+      - ./backend/videos:/app/backend/videos
+    environment:
+      - JWT_SECRET_KEY=change-me-in-prod
